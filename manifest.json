@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Color",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Basit bir Chrome eklentisi.",
     "action": {
       "default_popup": "popup.html",
