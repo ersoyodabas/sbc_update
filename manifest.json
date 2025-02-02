@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "Color",
+    "version": "1.0",
+    "description": "Basit bir Chrome eklentisi.",
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "logo.png",
+        "48": "logo.png",
+        
+        "128": "logo.png"
+      }
+    },
+    "update_url": "https://ersoyodabas.github.io/sbc_update/updates.xml",
+    "icons": {
+      "16": "logo.png",
+      "48": "logo.png",
+      "128": "logo.png"
+    },
+    "permissions": ["management"]
+  }
