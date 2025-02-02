@@ -19,17 +19,16 @@ document.getElementById("updateButton").addEventListener("click", () => {
         if (version > currentVersion) {
             debugger;
           // Yeni bir sürüm varsa eklentiyi güncelle
-             chrome.management.setEnabled(extensionId, false, () => {
-            //   chrome.management.setEnabled(extensionId, true, () => {
-            //     // Güncelleme tamamlandıktan sonra bir mesaj göster
-            //     chrome.notifications.create('update-complete', {
-            //       type: 'basic',
-            //       iconUrl: 'icon48.png',
-            //       title: 'Güncelleme Tamamlandı',
-            //       message: 'Eklenti başarıyla güncellendi.',
-            //     });
-            //   });
-             });
+         // Yeni bir sürüm varsa Chrome'un güncelleme mekanizmasını tetikle
+      chrome.runtime.requestUpdateCheck((status) => {
+        if (status === "update_available") {
+          console.log("Güncelleme bulundu, yükleniyor...");
+        } else if (status === "no_update") {
+          console.log("Eklenti zaten güncel.");
+        } else if (status === "throttled") {
+          console.log("Güncelleme kontrolü kısıtlandı, daha sonra tekrar deneyin.");
+        }
+      });
             chrome.runtime.reload();
 
         } else {
