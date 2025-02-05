@@ -1,44 +1,43 @@
-document.getElementById("updateButton").addEventListener("click", () => {
-    debugger;
-    const extensionId = chrome.runtime.id; // Eklentinin kimliği
-    debugger;
-    const updateUrl = "https://ersoyodabas.github.io/testapp/github/updates.xml";
-    debugger;
-  
-    fetch(updateUrl)
-      .then(response => response.text())
-      .then(data => {
-        console.log(data,11);
-        debugger;
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(data, "text/xml");
-        console.log(xmlDoc,15);
-        const version = xmlDoc.getElementsByTagName("updatecheck")[0].getAttribute("version");
-        console.log(version,16);
-        const currentVersion = chrome.runtime.getManifest().version;
-        if (version > currentVersion) {
-            debugger;
-          // Yeni bir sürüm varsa eklentiyi güncelle
-         // Yeni bir sürüm varsa Chrome'un güncelleme mekanizmasını tetikle
-      chrome.runtime.requestUpdateCheck((status) => {
-        if (status === "update_available") {
-          console.log("Güncelleme bulundu, yükleniyor...");
-        } else if (status === "no_update") {
-          console.log("Eklenti zaten güncel.");
-        } else if (status === "throttled") {
-          console.log("Güncelleme kontrolü kısıtlandı, daha sonra tekrar deneyin.");
-        }
-      });
-            chrome.runtime.reload();
+document.addEventListener("DOMContentLoaded", () => {
+    const updateButton = document.getElementById("checkUpdate");
+    if (!updateButton) {
+        console.error("Check Update button not found!");
+        return;
+    }
 
-        } else {
-          document.getElementById("message").textContent = "Eklenti zaten güncel.";
+    updateButton.addEventListener("click", async () => {
+        const updateUrl = "https://ersoyodabas.github.io/testapp/github/updates.xml"; // XML dosyasının URL'si
+        const currentVersion = chrome.runtime.getManifest().version;
+        const updateStatus = document.getElementById("updateStatus");
+
+        try {
+            // XML'i indir
+            const response = await fetch(updateUrl);
+            if (!response.ok) throw new Error("XML dosyası alınamadı");
+
+            const xmlText = await response.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+            // XML'deki versiyonu al
+            const version = xmlDoc.querySelector("updatecheck").getAttribute("version");
+            const crxUrl = xmlDoc.querySelector("updatecheck").getAttribute("codebase");
+
+            if (version > currentVersion) {
+                updateStatus.textContent = `New version (${version}) available. Downloading...`;
+
+                // CRX dosyasını indirmek için bir bağlantı oluştur
+                const a = document.createElement("a");
+                a.href = crxUrl;
+                a.download = "extension.crx";
+                a.textContent = "Download New Version";
+                document.body.appendChild(a);
+            } else {
+                updateStatus.textContent = "Your extension is up-to-date.";
+            }
+        } catch (error) {
+            console.error(error);
+            updateStatus.textContent = "Error checking for updates.";
         }
-      })
-      .catch(error => {
-        alert();
-        debugger;
-        console.error("Güncelleme kontrolü başarısız:", error);
-        document.getElementById("message").textContent = "Güncelleme kontrolü başarısız.";
-      });
-  });
+    });
+});
